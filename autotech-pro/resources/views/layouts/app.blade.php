@@ -6,60 +6,225 @@
     <title>AutoTech Pro - @yield('title', 'Sistema de Oficina')</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
-        body { background-color: #f8f9fa; }
-        .sidebar { min-height: 100vh; background-color: #343a40; }
-        .sidebar a { color: #adb5bd; text-decoration: none; display: block; padding: 8px 15px; }
-        .sidebar a:hover { background-color: #495057; color: #fff; }
-        .sidebar .nav-section { color: #6c757d; font-size: 11px; text-transform: uppercase; padding: 15px 15px 5px; }
-        .main-content { padding: 20px; }
+        :root {
+            --preto-principal: #0A0A0A;
+            --preto-secundario: #141414;
+            --vermelho-principal: #C40000;
+            --vermelho-claro: #FF1A1A;
+            --branco: #FFFFFF;
+            --cinza-medio: #A6A6A6;
+        }
+
+        body { 
+            background-color: var(--preto-principal); 
+            color: var(--branco);
+        }
+        .text-muted {
+            color: var(--cinza-medio) !important;
+        }
+        .sidebar, .offcanvas { 
+            background-color: var(--preto-secundario); 
+        }
+        .offcanvas {
+            color: var(--branco);
+        }
+        .sidebar a, .offcanvas a { 
+            color: var(--cinza-medio); 
+            text-decoration: none; 
+            display: block; 
+            padding: 10px 15px; 
+            margin: 2px 10px;
+            border-radius: 6px;
+            transition: all 0.3s ease;
+        }
+        .sidebar a:hover, .offcanvas a:hover { 
+            background-color: var(--vermelho-principal); 
+            color: var(--branco); 
+        }
+        .sidebar .nav-section, .offcanvas .nav-section { 
+            color: var(--cinza-medio); 
+            font-size: 11px; 
+            text-transform: uppercase; 
+            padding: 20px 15px 5px; 
+            display: block;
+        }
+        .main-content { 
+            padding: 20px; 
+        }
+        .border-secondary {
+            border-color: #2a2a2a !important;
+        }
+        .btn-sair {
+            color: var(--vermelho-claro) !important;
+        }
+        .btn-sair:hover {
+            background-color: rgba(255, 26, 26, 0.1) !important;
+            color: var(--vermelho-claro) !important;
+        }
+        /* Botão de menu mobile */
+        .navbar-toggler {
+            border-color: var(--cinza-medio);
+        }
+        .navbar-toggler-icon {
+            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3e%3cpath stroke='rgba(255, 255, 255, 0.75)' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e");
+        }
     </style>
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
 <body>
 
-<div class="container-fluid">
-    <div class="row">
-        <div class="col-md-2 sidebar p-0">
+<nav class="navbar d-md-none bg-dark border-bottom border-secondary px-3 py-2">
+    <div class="container-fluid">
+        <span class="navbar-brand text-white">AutoTech Pro</span>
+        <button class="navbar-toggler" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasMenu" aria-controls="offcanvasMenu">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+    </div>
+</nav>
+
+<div class="offcanvas offcanvas-start bg-dark" tabindex="-1" id="offcanvasMenu" aria-labelledby="offcanvasMenuLabel">
+    <div class="offcanvas-header border-bottom border-secondary">
+        <h5 class="offcanvas-title text-white" id="offcanvasMenuLabel">AutoTech Pro</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+    </div>
+    <div class="offcanvas-body p-0">
+        <div class="p-3 border-bottom border-secondary">
+            <h6 class="text-white mb-0">Olá, {{ session('user_name') }}</h6>
+            <small class="text-muted">
+                @switch(session('user_role'))
+                    @case('manager') <span class="badge bg-dark">Gerente</span> @break
+                    @case('attendant') <span class="badge bg-secondary">Atendente</span> @break
+                    @case('mechanic') <span class="badge bg-secondary">Mecânico</span> @break
+                    @case('customer') <span class="badge bg-secondary">Cliente</span> @break
+                @endswitch
+            </small>
+        </div>
+
+        <nav class="mt-2">
+            <span class="nav-section">Principal</span>
+            <a class="nav-link d-flex align-items-center gap-2" href="{{ route('dashboard') }}"> 
+                <i data-lucide="layout-dashboard" class="size-4"></i>
+                Dashboard
+            </a>
+
+            <span class="nav-section">Operacional</span>
+            <a class="nav-link d-flex align-items-center gap-2" href="{{ route('orders.index') }}">
+                <i data-lucide="wrench" class="size-4"></i> 
+                Ordens de Serviço
+            </a>
+            <a class="nav-link d-flex align-items-center gap-2" href="{{ route('vehicles.index') }}">
+                <i data-lucide="car" class="size-4"></i> 
+                Veículos
+            </a>
+
+            @if(in_array(session('user_role'), ['mechanic', 'attendant', 'manager']))
+                <a class="nav-link d-flex align-items-center gap-2" href="{{ route('fipe.index') }}">
+                    <i data-lucide="search-code" class="size-4"></i> 
+                    Consulta FIPE
+                </a>
+            @endif
+
+            @if(session('user_role') !== 'customer')
+                <span class="nav-section mt-3">Estoque</span>
+                <a class="nav-link d-flex align-items-center gap-2" href="{{ route('parts.index') }}"> 
+                    <i data-lucide="package" class="size-4"></i>
+                    Peças / Estoque
+                </a>
+                <a class="nav-link d-flex align-items-center gap-2" href="{{ route('services.index') }}"> 
+                    <i data-lucide="briefcase" class="size-4"></i>
+                    Catálogo de Serviços
+                </a>
+            @endif
+
+            @if(session('user_role') === 'manager')
+                <span class="nav-section mt-3">Administração</span>
+                <a class="nav-link d-flex align-items-center gap-2" href="{{ route('users.index') }}"> 
+                    <i data-lucide="users" class="size-4"></i>
+                    Usuários
+                </a>
+            @endif
+
+            <span class="nav-section mt-3">Conta</span>
+            <form method="POST" action="{{ route('logout') }}" id="logout-form-mobile">
+                @csrf
+                <a href="#" class="nav-link d-flex align-items-center gap-2 btn-sair" onclick="event.preventDefault(); document.getElementById('logout-form-mobile').submit();"> 
+                    <i data-lucide="log-out" class="size-4"></i>
+                    Sair
+                </a>
+            </form>
+        </nav>
+    </div>
+</div>
+
+<div class="container-fluid p-0">
+    <div class="row min-vh-100 g-0">
+        
+        <div class="col-md-2 sidebar p-0 d-none d-md-block border-end border-secondary">
             <div class="p-3 border-bottom border-secondary">
                 <h6 class="text-white mb-0">AutoTech Pro</h6>
                 <small class="text-muted">
                     {{ session('user_name') }}
                     <br>
                     @switch(session('user_role'))
-                        @case('manager') <span class="badge bg-dark">Gerente</span> @break
-                        @case('attendant') <span class="badge bg-secondary">Atendente</span> @break
-                        @case('mechanic') <span class="badge bg-secondary">Mecânico</span> @break
-                        @case('customer') <span class="badge bg-secondary">Cliente</span> @break
+                        @case('manager') <span class="badge bg-dark mt-1">Gerente</span> @break
+                        @case('attendant') <span class="badge bg-secondary mt-1">Atendente</span> @break
+                        @case('mechanic') <span class="badge bg-secondary mt-1">Mecânico</span> @break
+                        @case('customer') <span class="badge bg-secondary mt-1">Cliente</span> @break
                     @endswitch
                 </small>
             </div>
 
             <nav class="mt-2">
                 <span class="nav-section">Principal</span>
-                <a href="{{ route('dashboard') }}"><img src="/icons/home.png" alt="Início" width="24" height="24" style="width:24px;height:24px;max-width:24px;vertical-align:middle;object-fit:contain;"> Dashboard</a>
+                <a class="nav-link d-flex align-items-center gap-2" href="{{ route('dashboard') }}"> 
+                    <i data-lucide="layout-dashboard" class="size-4"></i>
+                    Dashboard
+                </a>
 
                 <span class="nav-section">Operacional</span>
-                <a href="{{ route('orders.index') }}"><img src="/icons/clipboard.png" alt="Ordens" width="24" height="24" style="width:24px;height:24px;max-width:24px;vertical-align:middle;object-fit:contain;"> Ordens de Serviço</a>
-                <a href="{{ route('vehicles.index') }}"><img src="/icons/car.png" alt="Veículos" width="24" height="24" style="width:24px;height:24px;max-width:24px;vertical-align:middle;object-fit:contain;"> Veículos</a>
+                <a class="nav-link d-flex align-items-center gap-2" href="{{ route('orders.index') }}">
+                    <i data-lucide="wrench" class="size-4"></i> 
+                    Ordens de Serviço
+                </a>
+                <a class="nav-link d-flex align-items-center gap-2" href="{{ route('vehicles.index') }}">
+                    <i data-lucide="car" class="size-4"></i> 
+                    Veículos
+                </a>
 
                 @if(in_array(session('user_role'), ['mechanic', 'attendant', 'manager']))
-                    <a href="{{ route('fipe.index') }}"><img src="/icons/money.png" alt="FIPE" width="24" height="24" style="width:24px;height:24px;max-width:24px;vertical-align:middle;object-fit:contain;"> Consulta FIPE</a>
+                    <a class="nav-link d-flex align-items-center gap-2" href="{{ route('fipe.index') }}">
+                        <i data-lucide="search-code" class="size-4"></i> 
+                        Consulta FIPE
+                    </a>
                 @endif
 
                 @if(session('user_role') !== 'customer')
-                    <span class="nav-section">Estoque</span>
-                    <a href="{{ route('parts.index') }}"><img src="/icons/wrench.png" alt="Peças" width="24" height="24" style="width:24px;height:24px;max-width:24px;vertical-align:middle;object-fit:contain;"> Peças / Estoque</a>
-                    <a href="{{ route('services.index') }}"><img src="/icons/edit.png" alt="Catálogo" width="24" height="24" style="width:24px;height:24px;max-width:24px;vertical-align:middle;object-fit:contain;"> Catálogo de Serviços</a>
+                    <span class="nav-section mt-3">Estoque</span>
+                    <a class="nav-link d-flex align-items-center gap-2" href="{{ route('parts.index') }}"> 
+                        <i data-lucide="package" class="size-4"></i>
+                        Peças / Estoque
+                    </a>
+                    <a class="nav-link d-flex align-items-center gap-2" href="{{ route('services.index') }}"> 
+                        <i data-lucide="briefcase" class="size-4"></i>
+                        Catálogo de Serviços
+                    </a>
                 @endif
 
                 @if(session('user_role') === 'manager')
-                    <span class="nav-section">Administração</span>
-                    <a href="{{ route('users.index') }}"><img src="/icons/users.png" alt="Usuários" width="24" height="24" style="width:24px;height:24px;max-width:24px;vertical-align:middle;object-fit:contain;"> Usuários</a>
+                    <span class="nav-section mt-3">Administração</span>
+                    <a class="nav-link d-flex align-items-center gap-2" href="{{ route('users.index') }}"> 
+                        <i data-lucide="users" class="size-4"></i>
+                        Usuários
+                    </a>
                 @endif
 
-                <span class="nav-section">Conta</span>
-                <form method="POST" action="{{ route('logout') }}" id="logout-form">
+                <span class="nav-section mt-3">Conta</span>
+                <form method="POST" action="{{ route('logout') }}" id="logout-form-desktop">
                     @csrf
-                    <a href="#" onclick="event.preventDefault(); document.getElementById('logout-form').submit();" style="color: #ff6b6b;"><img src="/icons/door.png" alt="Sair" width="24" height="24" style="width:24px;height:24px;max-width:24px;vertical-align:middle;object-fit:contain;"> Sair</a>
+                    <a href="#" class="nav-link d-flex align-items-center gap-2 btn-sair" onclick="event.preventDefault(); document.getElementById('logout-form-desktop').submit();"> 
+                        <i data-lucide="log-out" class="size-4"></i>
+                        Sair
+                    </a>
                 </form>
             </nav>
         </div>
@@ -86,6 +251,33 @@
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script src="/js/autotech.js"></script>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const offcanvasLinks = document.querySelectorAll('#offcanvasMenu a.nav-link:not([onclick])');
+    const offcanvasElement = document.getElementById('offcanvasMenu');
+    
+    if (offcanvasElement) {
+        const offcanvasInstance = bootstrap.Offcanvas.getInstance(offcanvasElement) || new bootstrap.Offcanvas(offcanvasElement);
+        
+        offcanvasLinks.forEach(link => {
+            link.addEventListener('click', function(e) {
+                e.preventDefault();
+                const href = this.getAttribute('href');
+                
+                offcanvasInstance.hide();
+                
+                setTimeout(() => {
+                    if (href && href !== '#') {
+                        window.location.href = href;
+                    }
+                }, 300);
+            });
+        });
+    }
+});
+</script>
+
 @yield('scripts')
 </body>
 </html>
