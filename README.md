@@ -10,6 +10,8 @@ Sistema web de gestão para oficinas mecânicas desenvolvido com PHP e Laravel. 
 - MySQL
 - Bootstrap 5
 - API FIPE (parallelum.com.br)
+- HTML CSS JS
+- Lucide
 
 ---
 
@@ -20,8 +22,12 @@ Sistema web de gestão para oficinas mecânicas desenvolvido com PHP e Laravel. 
 3. Copie o `.env.example` para `.env` e configure o banco de dados
 4. Execute `php artisan key:generate`
 5. Rode o SQL em `database/create_database.sql` no MySQL
-6. Execute `php artisan serve`
-7. Acesse `http://localhost:8000`
+6. Entre no terminal `cd autotech-pro` e execute `npm run dev` p/ inicializar o vite
+7. Execute `php artisan serve`
+9. Acesse `http://localhost:8000`
+
+Obs: Mantenha ambos os endereços ligados, enquanto abre somente o `php artisan serve`.
+Caso não o faça, é possível que algumas partes da estilização não carregue.
 
 Login inicial: `teste@autotech.com` — Senha: `password`
 
