@@ -17,9 +17,9 @@ Sistema web de gestão para oficinas mecânicas desenvolvido com PHP e Laravel. 
 
 1. Clone o repositório
 2. Execute `composer install`
-3. Copie o `.env.example` para `.env` e configure o banco de dados
+3. Edite o `.env` para ter as configurações do seu workbench
 4. Execute `php artisan key:generate`
-5. Rode o SQL em `database/create_database.sql` no MySQL
+5. Rode o SQL em `autotech_mysql.sql` no workbench para criar o banco de dados
 6. Execute `php artisan serve`
 7. Acesse `http://localhost:8000`
 
